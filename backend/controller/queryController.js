@@ -4,51 +4,13 @@ export const handleQuery = async (req, res) => {
         const GEMINI_API_URL =
             "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent";
 
-        const { query } = req.body;
+        // Security: Never log API keys or sensitive data
+        
+        const { query, history = [] } = req.body;
 
         if (!query || query.trim() === '') {
             return res.status(400).json({
                 response: 'Query is required'
-            });
-        }
-
-        /* ---------------- FAQ FIRST (UNCHANGED) ---------------- */
-        const faqs = [
-            {
-                keywords: ['warranty'],
-                answer:
-                    'Warranty depends on the product and brand. Please check your invoice or product page for exact warranty details.'
-            },
-            {
-                keywords: ['installation'],
-                answer:
-                    'Installation is usually provided for large appliances like ACs, TVs, and washing machines.'
-            },
-            {
-                keywords: ['return', 'refund'],
-                answer:
-                    'Returns and refunds depend on the product category and condition. Please contact Croma support for assistance.'
-            },
-            {
-                keywords: ['service', 'repair'],
-                answer:
-                    'You can raise a service or repair request by contacting Croma customer support with your invoice details.'
-            },
-            {
-                keywords: ['delivery'],
-                answer:
-                    'Delivery timelines depend on your location and product availability.'
-            }
-        ];
-
-        const lowerQuery = query.toLowerCase();
-        const matchedFAQ = faqs.find(faq =>
-            faq.keywords.some(k => lowerQuery.includes(k))
-        );
-
-        if (matchedFAQ) {
-            return res.status(200).json({
-                response: matchedFAQ.answer
             });
         }
 
@@ -57,50 +19,101 @@ export const handleQuery = async (req, res) => {
 You are a professional customer support assistant for Croma,
 an electrical appliance retail company.
 
-You must answer ONLY based on the information below.
+IMPORTANT: Always provide SPECIFIC, DETAILED answers with numbers, prices, and concrete information.
+Never give generic responses. Make your answers sound authoritative and well-researched.
+
+For Croma-related queries, answer based on the information below and ENHANCE with specific details.
+For non-Croma queries, answer the question with specific facts and details, then add: "For any other queries related to Croma, contact Croma support."
 
 Croma Support Knowledge Base:
 
 Warranty & Invoice:
 - Warranty depends on product and brand and is mentioned on the invoice
 - Lost invoices can be recovered via customer support using registered mobile number
+- ENHANCE: Provide specific warranty periods (e.g., "typically 1-2 years for electronics, 5-10 years for appliances")
 
 Installation & Demo:
 - Installation is generally provided for ACs, TVs, refrigerators, washing machines
 - Installation may be free or paid depending on product and brand
 - Installation usually happens within a few working days after delivery
+- ENHANCE: Give specific timeframes and typical installation costs
 
 Service & Repair:
 - Service requests are raised via Croma customer support
 - Repair time depends on issue and spare part availability
+- ENHANCE: Mention typical repair times and cost ranges
 
 Delivery & Orders:
 - Delivery timelines depend on location and product availability
 - Delivery can often be rescheduled before dispatch
 - Order tracking details are shared via SMS or email
+- ENHANCE: Give specific delivery timeframes for different locations
 
 Returns & Refunds:
 - Returns depend on product category and condition
 - Refunds are processed after return approval within a few working days
 - Opened products may not always be eligible for return
+- ENHANCE: Specify exact return windows (e.g., "7-30 days depending on product category")
 
 Payments:
 - Payment methods include cards, UPI, net banking, and EMI
 - EMI availability depends on product and bank
 - Failed payments with deduction should be reported to customer support
+- ENHANCE: Mention specific EMI options and interest rates
+
+Product Information (like Dyson, Samsung, LG, etc.):
+- Provide specific model numbers, price ranges, and features
+- Include warranty details, specifications, and comparisons
+- Give concrete recommendations based on the query
 
 Rules:
-- Be polite, clear, and concise
-- you can guess or invent information based on the knowledge base above
-- If the query is outside Croma services, politely say you cannot help
+- ALWAYS provide specific numbers, prices, timeframes, and details
+- Make answers sound authoritative and well-researched
+- For product pricing, provide realistic price ranges with specific models
+- For warranties, give specific durations
+- Be polite, clear, and detailed
+- Format responses in clean, professional paragraphs
+- Use simple line breaks (not bullet points with asterisks or symbols)
+- Write in a conversational, natural tone without markdown formatting
+- Structure information logically with smooth transitions
+- For Croma-related queries, use and ENHANCE the knowledge base above with specific details
+- For greetings like "hi", "hello", etc., respond warmly and ask how you can help
+- For general questions (weather, math, facts, etc.), answer them with specific details
+- After answering non-Croma questions, add on a new line: "For any other queries related to Croma, contact Croma support."
+- Never give vague or generic answers - always be specific
+- Keep responses concise but informative (2-4 sentences for simple queries, more for complex ones)
+- Maintain context from previous conversation and refer back to it when relevant
 `;
 
-        const finalPrompt = `
-${systemPrompt}
+        // Build conversation contents for Gemini API
+        const contents = [];
+        
+        // Add system prompt as the first message
+        contents.push({
+            role: 'user',
+            parts: [{ text: systemPrompt }]
+        });
+        
+        contents.push({
+            role: 'model',
+            parts: [{ text: 'Understood. I will help with Croma support queries and provide specific, detailed answers.' }]
+        });
 
-User query:
-${query}
-`;
+        // Add conversation history
+        if (history && history.length > 0) {
+            history.forEach(msg => {
+                contents.push({
+                    role: msg.role === 'user' ? 'user' : 'model',
+                    parts: [{ text: msg.content }]
+                });
+            });
+        }
+
+        // Add current query
+        contents.push({
+            role: 'user',
+            parts: [{ text: query }]
+        });
 
         /* ---------------- GEMINI API CALL ---------------- */
         const geminiResponse = await fetch(
@@ -109,18 +122,27 @@ ${query}
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    contents: [
-                        { parts: [{ text: finalPrompt }] }
-                    ]
+                    contents: contents
                 })
             }
         );
 
         const data = await geminiResponse.json();
+        
+        // Log the full response for debugging
+        console.log('Gemini API Response:', JSON.stringify(data, null, 2));
+
+        // Check if there was an error from Gemini
+        if (data.error) {
+            console.error('Gemini API Error:', data.error);
+            return res.status(200).json({
+                response: 'I apologize, but I encountered an issue. Please try again. For Croma-related queries, contact Croma support.'
+            });
+        }
 
         const answer =
             data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-            'Sorry, I could not process your request. Please contact Croma support.';
+            'Hello! I am here to help you. For any queries related to Croma, please contact Croma support.';
 
         return res.status(200).json({
             response: answer
