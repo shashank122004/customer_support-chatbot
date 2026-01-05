@@ -1,5 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, MessageCircle, HelpCircle } from 'lucide-react';
+import AgentModal from './AgentModal';
+
+// Simple function to format text with markdown-like syntax
+const formatMessage = (text) => {
+  // Replace **bold** with <strong>
+  let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  
+  // Replace *italic* or single asterisks with emphasis (but not already in bold)
+  formatted = formatted.replace(/(?<!\*)\*([^*]+?)\*(?!\*)/g, '<em>$1</em>');
+  
+  // Replace line breaks with <br>
+  formatted = formatted.replace(/\n/g, '<br>');
+  
+  return formatted;
+};
 
 export default function App() {
   const [messages, setMessages] = useState([
@@ -12,6 +27,15 @@ export default function App() {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [showAgentModal, setShowAgentModal] = useState(false);
+  const [agentForm, setAgentForm] = useState({ 
+    name: '', 
+    email: '', 
+    phone: '', 
+    category: '',
+    timeSlot: '',
+    issue: '' 
+  });
   const messagesEndRef = useRef(null);
 
   const faqs = [
@@ -46,12 +70,23 @@ export default function App() {
     setIsLoading(true);
 
     try {
+      // Build conversation history (last 10 messages for context)
+      const conversationHistory = messages
+        .slice(-10)
+        .map(msg => ({
+          role: msg.sender === 'user' ? 'user' : 'assistant',
+          content: msg.text
+        }));
+
       const response = await fetch('http://localhost:3000/query/request_query', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ query: trimmedMessage })
+        body: JSON.stringify({ 
+          query: trimmedMessage,
+          history: conversationHistory
+        })
       });
 
       if (!response.ok) {
@@ -93,6 +128,19 @@ export default function App() {
     }
   };
 
+  const handleAgentRequest = () => {
+    const confirmMessage = {
+      id: Date.now(),
+      text: `Thank you ${agentForm.name}! Your request has been received.\n\nCategory: ${agentForm.category}\nPreferred Contact Time: ${agentForm.timeSlot}\n\nA human agent will contact you at ${agentForm.email} or ${agentForm.phone} during your preferred time regarding: "${agentForm.issue}".`,
+      sender: 'bot',
+      timestamp: new Date()
+    };
+    
+    setMessages(prev => [...prev, confirmMessage]);
+    setShowAgentModal(false);
+    setAgentForm({ name: '', email: '', phone: '', category: '', timeSlot: '', issue: '' });
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 flex">
       {/* FAQ Section */}
@@ -123,7 +171,13 @@ export default function App() {
         </div>
         
         <div className="p-4 bg-gradient-to-r from-gray-50 to-purple-50 border-t border-gray-200">
-          <div className="text-xs text-gray-600 text-center">
+          <button
+            onClick={() => setShowAgentModal(true)}
+            className="w-full py-3 px-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+          >
+            Talk to Human Agent
+          </button>
+          <div className="text-xs text-gray-600 text-center mt-3">
             <p className="font-semibold mb-1">Need more help?</p>
             <p>Click any question to get started</p>
           </div>
@@ -159,7 +213,10 @@ export default function App() {
                     : 'bg-white border border-gray-200 text-gray-800 rounded-bl-sm'
                 }`}
               >
-                <p className="text-sm leading-relaxed">{message.text}</p>
+                <div 
+                  className="text-sm leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: formatMessage(message.text) }}
+                />
                 <p
                   className={`text-xs mt-2 ${
                     message.sender === 'user' ? 'text-purple-200' : 'text-gray-400'
@@ -209,6 +266,15 @@ export default function App() {
           </div>
         </div>
       </div>
+
+
+      <AgentModal
+        isOpen={showAgentModal}
+        onClose={() => setShowAgentModal(false)}
+        onSubmit={handleAgentRequest}
+        formData={agentForm}
+        setFormData={setAgentForm}
+      />
     </div>
   );
 }
