@@ -20,7 +20,7 @@ export default function App() {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: "Hello! I am Croma Support Assistant. How can I help you today?",
+      text: "Hello! I am Reliance Support Assistant. How can I help you today?",
       sender: 'bot',
       timestamp: new Date()
     }
@@ -142,15 +142,15 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 via-blue-50 to-indigo-100 flex">
+    <div className="min-h-screen bg-gradient-to-br from-teal-50 via-cyan-50 to-blue-100 flex">
       {/* FAQ Section */}
       <div className="w-80 bg-white border-r border-gray-200 shadow-xl flex flex-col">
-        <div className="p-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white">
+        <div className="p-6 bg-gradient-to-r from-teal-600 to-cyan-600 text-white">
           <div className="flex items-center gap-3 mb-2">
             <HelpCircle size={28} />
             <h2 className="text-2xl font-bold">FAQs</h2>
           </div>
-          <p className="text-purple-100 text-sm">Quick answers to common questions</p>
+          <p className="text-teal-100 text-sm">Quick answers to common questions</p>
         </div>
         
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
@@ -158,10 +158,10 @@ export default function App() {
             <button
               key={index}
               onClick={() => handleFaqClick(faq)}
-              className="w-full text-left p-4 bg-gradient-to-r from-purple-50 to-indigo-50 hover:from-purple-100 hover:to-indigo-100 rounded-xl border border-purple-200 hover:border-purple-300 transition-all duration-200 shadow-sm hover:shadow-md group"
+              className="w-full text-left p-4 bg-gradient-to-r from-teal-50 to-cyan-50 hover:from-teal-100 hover:to-cyan-100 rounded-xl border border-teal-200 hover:border-teal-300 transition-all duration-200 shadow-sm hover:shadow-md group"
             >
               <div className="flex items-start gap-3">
-                <div className="mt-1 w-2 h-2 rounded-full bg-purple-500 group-hover:bg-indigo-500 transition-colors"></div>
+                <div className="mt-1 w-2 h-2 rounded-full bg-teal-500 group-hover:bg-cyan-500 transition-colors"></div>
                 <span className="text-gray-700 text-sm leading-relaxed group-hover:text-gray-900 transition-colors">
                   {faq}
                 </span>
@@ -170,10 +170,10 @@ export default function App() {
           ))}
         </div>
         
-        <div className="p-4 bg-gradient-to-r from-gray-50 to-purple-50 border-t border-gray-200">
+        <div className="p-4 bg-gradient-to-r from-gray-50 to-teal-50 border-t border-gray-200">
           <button
             onClick={() => setShowAgentModal(true)}
-            className="w-full py-3 px-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-200"
+            className="w-full py-3 px-4 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-200"
           >
             Talk to Human Agent
           </button>
@@ -187,14 +187,14 @@ export default function App() {
       {/* Chatbot Section */}
       <div className="flex-1 flex flex-col bg-white">
         {/* Header */}
-        <div className="bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-6 shadow-lg">
+        <div className="bg-gradient-to-r from-teal-600 to-cyan-600 text-white p-6 shadow-lg">
           <div className="flex items-center gap-4">
             <div className="bg-white/20 p-3 rounded-full backdrop-blur-sm">
               <MessageCircle size={32} />
             </div>
             <div>
-              <h1 className="text-3xl font-bold">Croma Support Assistant</h1>
-              <p className="text-purple-100 text-sm mt-1">We're here to help you 24/7</p>
+              <h1 className="text-3xl font-bold">Reliance Support Assistant</h1>
+              <p className="text-teal-100 text-sm mt-1">We're here to help you 24/7</p>
             </div>
           </div>
         </div>
@@ -209,7 +209,7 @@ export default function App() {
               <div
                 className={`max-w-md px-5 py-3 rounded-2xl shadow-md ${
                   message.sender === 'user'
-                    ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-br-sm'
+                    ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-br-sm'
                     : 'bg-white border border-gray-200 text-gray-800 rounded-bl-sm'
                 }`}
               >
@@ -219,7 +219,7 @@ export default function App() {
                 />
                 <p
                   className={`text-xs mt-2 ${
-                    message.sender === 'user' ? 'text-purple-200' : 'text-gray-400'
+                    message.sender === 'user' ? 'text-teal-200' : 'text-gray-400'
                   }`}
                 >
                   {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
@@ -232,9 +232,9 @@ export default function App() {
             <div className="flex justify-start">
               <div className="bg-white border border-gray-200 px-5 py-3 rounded-2xl rounded-bl-sm shadow-md">
                 <div className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  <div className="w-2 h-2 bg-purple-600 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                  <div className="w-2 h-2 bg-teal-600 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-teal-600 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-2 h-2 bg-teal-600 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
                 </div>
               </div>
             </div>
@@ -253,12 +253,12 @@ export default function App() {
               onKeyPress={handleKeyPress}
               placeholder="Type your message here..."
               disabled={isLoading}
-              className="flex-1 px-5 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-200 transition-all disabled:bg-gray-100 disabled:cursor-not-allowed text-gray-800"
+              className="flex-1 px-5 py-3 border-2 border-gray-300 rounded-xl focus:outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-200 transition-all disabled:bg-gray-100 disabled:cursor-not-allowed text-gray-800"
             />
             <button
               onClick={() => handleSend()}
               disabled={!inputValue.trim() || isLoading}
-              className="px-6 py-3 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-xl hover:from-purple-700 hover:to-indigo-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg flex items-center gap-2 font-semibold"
+              className="px-6 py-3 bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-xl hover:from-teal-700 hover:to-cyan-700 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg flex items-center gap-2 font-semibold"
             >
               <Send size={20} />
               Send

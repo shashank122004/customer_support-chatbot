@@ -16,16 +16,16 @@ export const handleQuery = async (req, res) => {
 
         /* ---------------- STRONG SYSTEM PROMPT ---------------- */
         const systemPrompt = `
-You are a professional customer support assistant for Croma,
+You are a professional customer support assistant for Reliance,
 an electrical appliance retail company.
 
 IMPORTANT: Always provide SPECIFIC, DETAILED answers with numbers, prices, and concrete information.
 Never give generic responses. Make your answers sound authoritative and well-researched.
 
-For Croma-related queries, answer based on the information below and ENHANCE with specific details.
-For non-Croma queries, answer the question with specific facts and details, then add: "For any other queries related to Croma, contact Croma support."
+For Reliance-related queries, answer based on the information below and ENHANCE with specific details.
+For non-Reliance queries, answer the question with specific facts and details, then add: "For any other queries related to Reliance, contact Reliance support."
 
-Croma Support Knowledge Base:
+Reliance Support Knowledge Base:
 
 Warranty & Invoice:
 - Warranty depends on product and brand and is mentioned on the invoice
@@ -39,7 +39,7 @@ Installation & Demo:
 - ENHANCE: Give specific timeframes and typical installation costs
 
 Service & Repair:
-- Service requests are raised via Croma customer support
+- Service requests are raised via Reliance customer support
 - Repair time depends on issue and spare part availability
 - ENHANCE: Mention typical repair times and cost ranges
 
@@ -76,10 +76,10 @@ Rules:
 - Use simple line breaks (not bullet points with asterisks or symbols)
 - Write in a conversational, natural tone without markdown formatting
 - Structure information logically with smooth transitions
-- For Croma-related queries, use and ENHANCE the knowledge base above with specific details
+- For Reliance-related queries, use and ENHANCE the knowledge base above with specific details
 - For greetings like "hi", "hello", etc., respond warmly and ask how you can help
 - For general questions (weather, math, facts, etc.), answer them with specific details
-- After answering non-Croma questions, add on a new line: "For any other queries related to Croma, contact Croma support."
+- After answering non-Reliance questions, add on a new line: "For any other queries related to Reliance, contact Reliance support."
 - Never give vague or generic answers - always be specific
 - Keep responses concise but informative (2-4 sentences for simple queries, more for complex ones)
 - Maintain context from previous conversation and refer back to it when relevant
@@ -96,7 +96,7 @@ Rules:
         
         contents.push({
             role: 'model',
-            parts: [{ text: 'Understood. I will help with Croma support queries and provide specific, detailed answers.' }]
+            parts: [{ text: 'Understood. I will help with Reliance support queries and provide specific, detailed answers.' }]
         });
 
         // Add conversation history
@@ -136,13 +136,13 @@ Rules:
         if (data.error) {
             console.error('Gemini API Error:', data.error);
             return res.status(200).json({
-                response: 'I apologize, but I encountered an issue. Please try again. For Croma-related queries, contact Croma support.'
+                response: 'I apologize, but I encountered an issue. Please try again. For Reliance-related queries, contact Reliance support.'
             });
         }
 
         const answer =
             data?.candidates?.[0]?.content?.parts?.[0]?.text ||
-            'Hello! I am here to help you. For any queries related to Croma, please contact Croma support.';
+            'Hello! I am here to help you. For any queries related to Reliance, please contact Reliance support.';
 
         return res.status(200).json({
             response: answer
